@@ -55,6 +55,10 @@ logs
 # Supabase
 .supabase/
 
+# Documentation
+docs/prd.md
+docs/userflow.md
+
 # Temporary files
 *.tmp
 *.temp
