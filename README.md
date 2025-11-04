@@ -1,92 +1,239 @@
-이 프로젝트는 [`EasyNext`](https://github.com/easynext/easynext)를 사용해 생성된 [Next.js](https://nextjs.org) 프로젝트입니다.
+# 블로그 체험단 플랫폼 SaaS
 
-## Getting Started
+광고주와 인플루언서를 연결하는 **체험단 매칭 SaaS 플랫폼**입니다.  
+광고주는 체험단을 등록 및 관리하고, 인플루언서는 다양한 체험단에 지원하고 활동 결과를 확인할 수 있습니다.
 
-개발 서버를 실행합니다.<br/>
-환경에 따른 명령어를 사용해주세요.
+## 📋 목차
+
+- [주요 기능](#주요-기능)
+- [기술 스택](#기술-스택)
+- [시작하기](#시작하기)
+- [환경 변수 설정](#환경-변수-설정)
+- [프로젝트 구조](#프로젝트-구조)
+- [데이터베이스](#데이터베이스)
+- [개발 가이드](#개발-가이드)
+
+## 🚀 주요 기능
+
+### 인플루언서
+- 체험단 모집 목록 조회
+- 체험단 지원 및 관리
+- 지원 현황 확인 (신청완료 / 선정 / 반려)
+
+### 광고주
+- 체험단 등록 및 관리
+- 지원자 목록 조회 및 선정 관리
+- 체험단 상태 관리 (모집중 / 모집종료 / 선정완료)
+
+## 🛠 기술 스택
+
+### 프론트엔드
+- **[Next.js 15](https://nextjs.org)** - React 프레임워크 (App Router)
+- **[React 19](https://react.dev)** - UI 라이브러리
+- **[TypeScript](https://www.typescriptlang.org)** - 타입 안정성
+- **[Tailwind CSS](https://tailwindcss.com)** - 스타일링
+- **[Shadcn UI](https://ui.shadcn.com)** - UI 컴포넌트
+- **[React Query](https://tanstack.com/query/latest)** - 서버 상태 관리
+- **[React Hook Form](https://react-hook-form.com)** - 폼 관리
+- **[Zod](https://zod.dev)** - 스키마 검증
+
+### 백엔드
+- **[Supabase](https://supabase.com)** - 인증 및 데이터베이스
+- **[Hono](https://hono.dev)** - API 라우터
+- **[PostgreSQL](https://www.postgresql.org)** - 데이터베이스
+
+### 기타 도구
+- **[Lucide Icons](https://lucide.dev)** - 아이콘
+- **[date-fns](https://date-fns.org)** - 날짜 처리
+- **[TS Pattern](https://github.com/gvergnaud/ts-pattern)** - 패턴 매칭
+- **[Zustand](https://zustand-demo.pmnd.rs)** - 클라이언트 상태 관리
+
+## 🏁 시작하기
+
+### 필수 요구사항
+
+- Node.js 20 이상
+- npm, yarn, pnpm 또는 bun
+- Supabase 프로젝트 (인증 및 데이터베이스)
+
+### 설치
+
+```bash
+# 의존성 설치
+npm install
+# 또는
+yarn install
+# 또는
+pnpm install
+```
+
+### 개발 서버 실행
 
 ```bash
 npm run dev
-# or
+# 또는
 yarn dev
-# or
+# 또는
 pnpm dev
-# or
+# 또는
 bun dev
 ```
 
 브라우저에서 [http://localhost:3000](http://localhost:3000)을 열어 결과를 확인할 수 있습니다.
 
-`app/page.tsx` 파일을 수정하여 페이지를 편집할 수 있습니다. 파일을 수정하면 자동으로 페이지가 업데이트됩니다.
+### 빌드
 
-## 기본 포함 라이브러리
+```bash
+# 프로덕션 빌드
+npm run build
 
-- [Next.js](https://nextjs.org)
-- [React](https://react.dev)
-- [Tailwind CSS](https://tailwindcss.com)
-- [TypeScript](https://www.typescriptlang.org)
-- [ESLint](https://eslint.org)
-- [Prettier](https://prettier.io)
-- [Shadcn UI](https://ui.shadcn.com)
-- [Lucide Icon](https://lucide.dev)
-- [date-fns](https://date-fns.org)
-- [react-use](https://github.com/streamich/react-use)
-- [es-toolkit](https://github.com/toss/es-toolkit)
-- [Zod](https://zod.dev)
-- [React Query](https://tanstack.com/query/latest)
-- [React Hook Form](https://react-hook-form.com)
-- [TS Pattern](https://github.com/gvergnaud/ts-pattern)
-
-## 사용 가능한 명령어
-
-한글버전 사용
-
-```sh
-easynext lang ko
+# 프로덕션 서버 실행
+npm run start
 ```
 
-최신버전으로 업데이트
+### 린트
 
-```sh
-npm i -g @easynext/cli@latest
-# or
-yarn add -g @easynext/cli@latest
-# or
-pnpm add -g @easynext/cli@latest
+```bash
+npm run lint
 ```
 
-Supabase 설정
+## ⚙️ 환경 변수 설정
 
-```sh
-easynext supabase
+프로젝트 루트에 `.env.local` 파일을 생성하고 다음 환경 변수를 설정하세요:
+
+```env
+# Supabase 설정 (클라이언트)
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+
+# Supabase 설정 (서버 전용 - 절대 클라이언트에 노출하지 마세요)
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 ```
 
-Next-Auth 설정
+환경 변수는 `src/constants/env.ts`에서 검증됩니다.
 
-```sh
-easynext auth
+## 📁 프로젝트 구조
 
-# ID,PW 로그인
-easynext auth idpw
-# 카카오 로그인
-easynext auth kakao
+```
+├── src/
+│   ├── app/                    # Next.js App Router
+│   │   ├── (protected)/        # 보호된 라우트
+│   │   │   └── dashboard/      # 대시보드 페이지
+│   │   ├── api/                # API 라우트
+│   │   │   └── [[...hono]]/    # Hono 라우터 엔트리포인트
+│   │   ├── login/              # 로그인 페이지
+│   │   └── signup/             # 회원가입 페이지
+│   ├── backend/                 # 백엔드 로직
+│   │   ├── config/             # 설정
+│   │   ├── hono/               # Hono 앱 및 컨텍스트
+│   │   ├── http/               # HTTP 응답 유틸리티
+│   │   ├── middleware/         # 미들웨어 (에러, Supabase, 컨텍스트)
+│   │   └── supabase/           # Supabase 클라이언트
+│   ├── components/             # 공통 컴포넌트
+│   │   └── ui/                 # UI 컴포넌트 (Shadcn)
+│   ├── features/               # 기능별 모듈
+│   │   ├── auth/               # 인증 기능
+│   │   │   ├── backend/        # 백엔드 로직 (라우트, 서비스, 스키마)
+│   │   │   ├── components/     # 인증 컴포넌트
+│   │   │   ├── hooks/          # 인증 훅
+│   │   │   └── server/         # 서버 사이드 로직
+│   │   └── example/            # 예제 기능 (템플릿)
+│   ├── constants/              # 상수 정의
+│   ├── hooks/                  # 공통 훅
+│   ├── lib/                    # 유틸리티 및 헬퍼
+│   │   ├── remote/             # API 클라이언트
+│   │   ├── supabase/           # Supabase 유틸리티
+│   │   └── service-worker.ts   # 서비스 워커
+│   └── middleware.ts           # Next.js 미들웨어
+├── supabase/
+│   └── migrations/             # 데이터베이스 마이그레이션 파일
+├── public/                     # 정적 파일
+└── docs/                       # 프로젝트 문서
 ```
 
-유용한 서비스 연동
+### 주요 디렉토리 설명
 
-```sh
-# Google Analytics
-easynext gtag
+- **`src/app`**: Next.js App Router 엔트리포인트와 레이아웃 정의
+- **`src/backend`**: Hono 앱, 미들웨어, Supabase 서비스
+- **`src/features`**: 기능별 모듈 (각 기능별 DTO, 라우터, React Query 훅 포함)
+- **`supabase/migrations`**: PostgreSQL 마이그레이션 파일
 
-# Microsoft Clarity
-easynext clarity
+## 🗄️ 데이터베이스
 
-# ChannelIO
-easynext channelio
+### 마이그레이션 실행
 
-# Sentry
-easynext sentry
+Supabase CLI를 사용하여 마이그레이션을 실행하세요:
 
-# Google Adsense
-easynext adsense
+```bash
+# Supabase CLI 설치 (아직 설치하지 않은 경우)
+npm install -g supabase
+
+# Supabase 프로젝트 연결
+supabase link --project-ref your-project-ref
+
+# 마이그레이션 실행
+supabase db push
 ```
+
+### 주요 테이블
+
+- `users` - 사용자 기본 정보
+- `influencer_profiles` - 인플루언서 프로필
+- `influencer_channels` - 인플루언서 SNS 채널 정보
+- `advertiser_profiles` - 광고주 프로필
+- `campaigns` - 체험단(캠페인) 정보
+- `campaign_applications` - 체험단 지원 정보
+- `user_consents` - 약관 동의 이력
+
+자세한 데이터베이스 스키마는 `docs/database.md`를 참조하세요.
+
+## 💻 개발 가이드
+
+### 기능 추가하기
+
+새로운 기능을 추가할 때는 `src/features` 디렉토리 아래에 다음 구조로 생성하세요:
+
+```
+src/features/[feature-name]/
+├── backend/
+│   ├── routes/          # Hono 라우트
+│   ├── services/        # 비즈니스 로직
+│   ├── schema/          # Zod 스키마
+│   └── errors/          # 에러 정의
+├── components/          # React 컴포넌트
+├── hooks/               # React Query 훅
+└── lib/                 # 유틸리티 함수
+```
+
+### 코드 스타일
+
+- **타입 안정성**: TypeScript를 적극 활용하세요
+- **에러 처리**: `ts-pattern`을 사용하여 결과를 패턴 매칭으로 처리하세요
+- **주석**: 복잡한 로직에는 한국어 주석을 추가하세요
+- **변수명**: 의미가 명확한 변수명을 사용하세요
+
+### API 구조
+
+백엔드 API는 Hono를 사용하여 구성됩니다:
+
+1. **에러 처리**: `errorBoundary` 미들웨어
+2. **컨텍스트**: `withAppContext` 미들웨어
+3. **Supabase**: `withSupabase` 미들웨어
+4. **라우트**: 각 기능별 라우트 등록
+
+클라이언트에서는 React Query를 통해 API를 호출합니다.
+
+## 📚 참고 문서
+
+- [프로젝트 기획서 (PRD)](docs/prd.md)
+- [데이터베이스 스키마](docs/database.md)
+- [사용자 플로우](docs/userflow.md)
+- [데이터 플로우](docs/dataflow.md)
+
+## 📄 라이선스
+
+이 프로젝트는 개인 프로젝트입니다.
+
+---
+
+**Made with ❤️ using Next.js, Supabase, and Hono**

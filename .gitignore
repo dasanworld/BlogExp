@@ -8,14 +8,12 @@ node_modules/
 
 # Next.js
 /.next/
+/.next-dev/
 /out/
-
-# Production
 /build
 /dist
 
 # Misc
-.DS_Store
 *.pem
 
 # Debug
@@ -30,6 +28,9 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
+.env.development
+.env.test
+.env.production
 
 # Vercel
 .vercel
@@ -37,18 +38,6 @@ yarn-error.log*
 # TypeScript
 *.tsbuildinfo
 next-env.d.ts
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-.project
-.classpath
-.settings/
-*.sublime-project
-*.sublime-workspace
 
 # OS
 .DS_Store
@@ -70,6 +59,27 @@ logs
 *.tmp
 *.temp
 .cache/
+
+# Package manager
+package-lock.json.bak
+yarn.lock.bak
+pnpm-lock.yaml.bak
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
 
 # START Ruler Generated Files
 /.aider.conf.yml
