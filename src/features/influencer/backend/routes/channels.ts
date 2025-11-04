@@ -11,7 +11,7 @@ import {
 import { profileErrorCodes } from '../errors/profile-error';
 
 export const registerChannelRoutes = (app: Hono<AppEnv>) => {
-  app.get('/influencer/channels', async (c) => {
+  app.get('/api/influencer/channels', async (c) => {
     const logger = getLogger(c);
     const supabase = getSupabase(c);
     const userId = c.req.header('x-user-id');
@@ -27,7 +27,7 @@ export const registerChannelRoutes = (app: Hono<AppEnv>) => {
     return respond(c, result);
   });
 
-  app.post('/influencer/channels', async (c) => {
+  app.post('/api/influencer/channels', async (c) => {
     const logger = getLogger(c);
     const supabase = getSupabase(c);
     const userId = c.req.header('x-user-id');
@@ -73,7 +73,7 @@ export const registerChannelRoutes = (app: Hono<AppEnv>) => {
     return respond(c, result);
   });
 
-  app.put('/influencer/channels/:id', async (c) => {
+  app.put('/api/influencer/channels/:id', async (c) => {
     const logger = getLogger(c);
     const supabase = getSupabase(c);
     const userId = c.req.header('x-user-id');
@@ -121,7 +121,7 @@ export const registerChannelRoutes = (app: Hono<AppEnv>) => {
     return respond(c, result);
   });
 
-  app.delete('/influencer/channels/:id', async (c) => {
+  app.delete('/api/influencer/channels/:id', async (c) => {
     const logger = getLogger(c);
     const supabase = getSupabase(c);
     const userId = c.req.header('x-user-id');

@@ -40,6 +40,42 @@ export const updateAdvertiserProfile = async (
   request: UpdateAdvertiserProfileRequest,
 ): Promise<HandlerResult<AdvertiserProfileResponse, AdvertiserProfileServiceError>> => {
   try {
+    // 0. 보조: users 테이블에 사용자가 없으면 Auth에서 가져와 생성 (FK 보장)
+    const { data: existedUser, error: checkUserErr } = await client
+      .from('users')
+      .select('id')
+      .eq('id', userId)
+      .maybeSingle();
+
+    if (checkUserErr) {
+      return failure(500, advertiserProfileErrorCodes.internalError, '사용자 확인 중 오류가 발생했습니다', checkUserErr);
+    }
+
+    if (!existedUser) {
+      // 서비스 롤로 Auth에서 사용자 조회
+      const { data: adminUser, error: adminErr } = await client.auth.admin.getUserById(userId);
+      if (adminErr || !adminUser?.user) {
+        return failure(500, advertiserProfileErrorCodes.internalError, '인증 사용자 정보를 조회할 수 없습니다', adminErr);
+      }
+
+      const email = adminUser.user.email;
+      const meta = (adminUser.user.user_metadata || {}) as { name?: string; phone?: string; role?: string };
+      const name = meta.name;
+      const phone = meta.phone;
+      const role = (meta.role as string | undefined) ?? 'advertiser';
+
+      if (!email || !name || !phone) {
+        return failure(400, advertiserProfileErrorCodes.invalidInput, '사용자 기본정보(이름/휴대폰/이메일)가 없어 프로필을 생성할 수 없습니다');
+      }
+
+      const { error: createUserErr } = await client
+        .from('users')
+        .insert({ id: userId, name, phone, email, role });
+
+      if (createUserErr) {
+        return failure(500, advertiserProfileErrorCodes.profileUpdateFailed, '사용자 기본정보 저장에 실패했습니다', createUserErr);
+      }
+    }
     const normalizedBusinessNumber = normalizeBusinessNumber(request.businessRegistrationNumber);
 
     const { data: existing, error: checkError } = await client
@@ -70,20 +106,41 @@ export const updateAdvertiserProfile = async (
       .select()
       .single();
 
-    if (updateError || !updated) {
+    // 행이 없으면 INSERT (온보딩 최초 등록)
+    let final = updated;
+    if ((!updated || updateError?.code === 'PGRST116') /* No rows updated */) {
+      const { data: inserted, error: insertError } = await client
+        .from('advertiser_profiles')
+        .insert({
+          user_id: userId,
+          business_name: request.businessName,
+          location: request.location,
+          category: request.category,
+          business_registration_number: normalizedBusinessNumber,
+          verification_status: 'pending',
+        })
+        .select()
+        .single();
+
+      if (insertError || !inserted) {
+        return failure(500, advertiserProfileErrorCodes.profileUpdateFailed, '프로필 저장에 실패했습니다', insertError);
+      }
+
+      final = inserted;
+    } else if (updateError) {
       return failure(500, advertiserProfileErrorCodes.profileUpdateFailed, '프로필 업데이트에 실패했습니다', updateError);
     }
 
     return success<AdvertiserProfileResponse>(
       {
-        userId: updated.user_id,
-        businessName: updated.business_name,
-        location: updated.location,
-        category: updated.category,
-        businessRegistrationNumber: updated.business_registration_number,
-        verificationStatus: updated.verification_status,
-        createdAt: updated.created_at,
-        updatedAt: updated.updated_at,
+        userId: final.user_id,
+        businessName: final.business_name,
+        location: final.location,
+        category: final.category,
+        businessRegistrationNumber: final.business_registration_number,
+        verificationStatus: final.verification_status,
+        createdAt: final.created_at,
+        updatedAt: final.updated_at,
       },
       201,
     );

@@ -74,16 +74,19 @@ export const getCampaigns = async (
       });
     }
 
+    const applicantCountMap: Record<string, number> = {};
+    if (data.length > 0) {
+      const ids = data.map((c) => c.id);
     const applicantCountResponse = await client
       .from('campaign_applications')
       .select('campaign_id')
-      .in('campaign_id', data.map(c => c.id));
+        .in('campaign_id', ids);
 
-    const applicantCountMap: Record<string, number> = {};
     if (applicantCountResponse.data) {
-      applicantCountResponse.data.forEach(app => {
+        applicantCountResponse.data.forEach((app) => {
         applicantCountMap[app.campaign_id] = (applicantCountMap[app.campaign_id] || 0) + 1;
       });
+      }
     }
 
     const campaigns: CampaignCard[] = data.map((c: any) => {

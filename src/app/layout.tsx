@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Providers from "./providers";
 import { loadCurrentUser } from "@/features/auth/server/load-current-user";
@@ -8,6 +8,9 @@ export const metadata: Metadata = {
   title: "SuperNext App",
   description: "SuperNext - Structured Next.js + Supabase Template",
   manifest: "/manifest.json",
+};
+
+export const viewport: Viewport = {
   themeColor: "#1e293b",
 };
 
@@ -22,7 +25,6 @@ export default async function RootLayout({
     <html lang="ko" suppressHydrationWarning>
       <head>
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#1e293b" />
       </head>
       <body className="antialiased font-sans">
         <Providers>

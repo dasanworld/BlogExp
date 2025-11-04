@@ -6,7 +6,7 @@ import { getInfluencerProfile, updateInfluencerProfile } from '../services/profi
 import { profileErrorCodes } from '../errors/profile-error';
 
 export const registerProfileRoutes = (app: Hono<AppEnv>) => {
-  app.get('/influencer/profile', async (c) => {
+  app.get('/api/influencer/profile', async (c) => {
     const logger = getLogger(c);
     const supabase = getSupabase(c);
     const userId = c.req.header('x-user-id');
@@ -22,7 +22,7 @@ export const registerProfileRoutes = (app: Hono<AppEnv>) => {
     return respond(c, result);
   });
 
-  app.put('/influencer/profile', async (c) => {
+  app.put('/api/influencer/profile', async (c) => {
     const logger = getLogger(c);
     const supabase = getSupabase(c);
     const userId = c.req.header('x-user-id');

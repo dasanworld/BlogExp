@@ -19,6 +19,7 @@ import { ChannelFormDialog } from './ChannelFormDialog';
 import { useUpdateProfile, useGetProfile } from '../hooks/useUpdateProfile';
 import { UpdateProfileRequestSchema, type UpdateProfileRequest, type ChannelInput } from '../backend/schema/profile-schema';
 import { calculateAge } from '@/lib/utils/date-utils';
+import { toast } from '@/hooks/use-toast';
 
 export const ProfileForm = () => {
   const router = useRouter();
@@ -98,9 +99,15 @@ export const ProfileForm = () => {
   };
 
   const onSubmit = async (data: UpdateProfileRequest) => {
+    try {
     const result = await updateProfile.mutateAsync(data);
     if (result) {
-      router.push('/influencer/dashboard');
+        toast({ title: '저장되었습니다', description: '검증이 진행됩니다.' });
+        router.push('/dashboard');
+      }
+    } catch (error: any) {
+      const message = error?.response?.data?.error?.message || error?.message || '등록에 실패했습니다';
+      toast({ title: '오류', description: message });
     }
   };
 

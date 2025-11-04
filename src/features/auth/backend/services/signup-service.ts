@@ -67,6 +67,17 @@ export const createUserAccount = async (
     });
 
     if (authError || !authData.user) {
+      const message = (authError?.message || '').toLowerCase();
+      // 이미 등록된 이메일인 경우 400으로 변환
+      if (message.includes('registered') || message.includes('already')) {
+        return failure(
+          400,
+          signupErrorCodes.emailExists,
+          '이미 사용 중인 이메일입니다',
+          authError,
+        );
+      }
+
       return failure(
         500,
         signupErrorCodes.authCreationFailed,
@@ -119,21 +130,8 @@ export const createUserAccount = async (
     }
 
     if (request.role === 'advertiser') {
-      const { error: profileError } = await client
-        .from('advertiser_profiles')
-        .insert({
-          user_id: userId,
-          verification_status: 'pending',
-        });
-
-      if (profileError) {
-        return failure(
-          500,
-          signupErrorCodes.profileCreationFailed,
-          '광고주 프로필 생성에 실패했습니다',
-          profileError,
-        );
-      }
+      // 광고주는 온보딩에서 필수 정보를 입력해야 하므로, 여기서는 프로필을 생성하지 않습니다.
+      // 이후 /api/advertiser/profile에서 없으면 INSERT 처리합니다.
     } else {
       const { error: profileError } = await client
         .from('influencer_profiles')
@@ -153,8 +151,8 @@ export const createUserAccount = async (
     }
 
     const redirectUrl = request.role === 'advertiser'
-      ? '/advertiser/onboarding'
-      : '/influencer/onboarding';
+      ? '/login?redirectedFrom=/advertiser/onboarding'
+      : '/login?redirectedFrom=/influencer/onboarding';
 
     return success<SignupResponse>({
       userId,

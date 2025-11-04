@@ -29,6 +29,15 @@ export const createHonoApp = () => {
   app.use("*", withAppContext());
   app.use("*", withSupabase());
 
+  // DEBUG: 요청 로깅 (개발 중 라우팅 문제 추적용)
+  app.use("*", async (c, next) => {
+    try {
+      const xuid = c.req.header("x-user-id");
+      console.info(`[API] ${c.req.method} ${c.req.path} x-user-id=${xuid ?? "-"}`);
+    } catch {}
+    await next();
+  });
+
   registerExampleRoutes(app);
   registerSignupRoutes(app);
   registerProfileRoutes(app);
@@ -41,6 +50,9 @@ export const createHonoApp = () => {
   registerAdvertiserCampaignRoutes(app);
   registerAdvertiserCampaignDetailRoutes(app);
   registerCampaignActionRoutes(app);
+
+  // DEBUG 헬스체크
+  app.get("/api/__debug/ping", (c) => c.json({ ok: true }));
 
   app.notFound((c) => {
     return c.json(

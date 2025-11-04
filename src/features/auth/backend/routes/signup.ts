@@ -14,7 +14,9 @@ import { createUserAccount } from '../services/signup-service';
 import { signupErrorCodes, type SignupServiceError } from '../errors/signup-error';
 
 export const registerSignupRoutes = (app: Hono<AppEnv>) => {
-  app.post('/auth/signup', async (c) => {
+  // Next.js [[...hono]]가 /api/* 경로로 위임하므로, 실제 라우트는 
+  // '/api/...' 프리픽스를 포함해야 매칭됩니다.
+  app.post('/api/auth/signup', async (c) => {
     const logger = getLogger(c);
     const supabase = getSupabase(c);
 

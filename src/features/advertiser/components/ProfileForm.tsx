@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
+import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser';
+import { toast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -24,6 +26,7 @@ export const AdvertiserProfileForm = () => {
   const router = useRouter();
   const updateProfile = useUpdateAdvertiserProfile();
   const { data: existingProfile } = useGetAdvertiserProfile();
+  const { isAuthenticated } = useCurrentUser();
   const [formattedBusinessNumber, setFormattedBusinessNumber] = useState('');
 
   const form = useForm<UpdateAdvertiserProfileRequest>({
@@ -55,9 +58,20 @@ export const AdvertiserProfileForm = () => {
   };
 
   const onSubmit = async (data: UpdateAdvertiserProfileRequest) => {
-    const result = await updateProfile.mutateAsync(data);
-    if (result) {
-      router.push('/advertiser/campaigns');
+    try {
+      if (!isAuthenticated) {
+        toast({ title: '로그인이 필요합니다', description: '로그인 후 다시 시도해주세요.' });
+        router.push('/login?redirectedFrom=/advertiser/onboarding');
+        return;
+      }
+      const result = await updateProfile.mutateAsync(data);
+      if (result) {
+        toast({ title: '저장되었습니다', description: '광고주 프로필이 등록되었습니다.' });
+        router.push('/advertiser/campaigns');
+      }
+    } catch (error: any) {
+      const message = error?.response?.data?.error?.message || error?.message || '등록에 실패했습니다';
+      toast({ title: '오류', description: message });
     }
   };
 
