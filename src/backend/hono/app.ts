@@ -7,6 +7,13 @@ import { registerSignupRoutes } from "@/features/auth/backend/routes/signup";
 import { registerProfileRoutes } from "@/features/influencer/backend/routes/profile";
 import { registerChannelRoutes } from "@/features/influencer/backend/routes/channels";
 import { registerAdvertiserProfileRoutes } from "@/features/advertiser/backend/routes/profile";
+import { registerCampaignListRoutes } from "@/features/campaign/backend/routes/list";
+import { registerCampaignDetailRoutes } from "@/features/campaign/backend/routes/detail";
+import { registerCampaignApplicationRoutes } from "@/features/campaign/backend/routes/application";
+import { registerMyApplicationsRoutes } from "@/features/campaign/backend/routes/my-applications";
+import { registerAdvertiserCampaignRoutes } from "@/features/advertiser/backend/routes/campaigns";
+import { registerCampaignDetailRoutes as registerAdvertiserCampaignDetailRoutes } from "@/features/advertiser/backend/routes/campaign-detail";
+import { registerCampaignActionRoutes } from "@/features/advertiser/backend/routes/campaign-actions";
 import type { AppEnv } from "@/backend/hono/context";
 
 let singletonApp: Hono<AppEnv> | null = null;
@@ -27,6 +34,13 @@ export const createHonoApp = () => {
   registerProfileRoutes(app);
   registerChannelRoutes(app);
   registerAdvertiserProfileRoutes(app);
+  registerCampaignListRoutes(app);
+  registerCampaignDetailRoutes(app);
+  registerCampaignApplicationRoutes(app);
+  registerMyApplicationsRoutes(app);
+  registerAdvertiserCampaignRoutes(app);
+  registerAdvertiserCampaignDetailRoutes(app);
+  registerCampaignActionRoutes(app);
 
   app.notFound((c) => {
     return c.json(

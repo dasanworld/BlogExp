@@ -1,0 +1,221 @@
+'use client';
+
+import { useForm, SubmitHandler } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { CreateCampaignSchema } from '../backend/schema/campaign-schema';
+import { CreateCampaignRequest, Campaign } from '../types/advertiser-types';
+import { useCreateCampaign } from '../hooks/useCreateCampaign';
+import { useUpdateCampaign } from '../hooks/useUpdateCampaign';
+
+interface CampaignFormProps {
+  initialData?: Campaign;
+  onSuccess?: () => void;
+}
+
+export const CampaignForm = ({ initialData, onSuccess }: CampaignFormProps) => {
+  const createCampaign = useCreateCampaign();
+  const updateCampaign = useUpdateCampaign();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<CreateCampaignRequest>({
+    resolver: zodResolver(CreateCampaignSchema) as any,
+    defaultValues: initialData
+      ? {
+          title: initialData.title,
+          description: initialData.description,
+          benefits: initialData.benefits,
+          mission: initialData.mission,
+          location: initialData.location,
+          recruitmentStartDate: initialData.recruitmentStartDate.slice(0, 16),
+          recruitmentEndDate: initialData.recruitmentEndDate.slice(0, 16),
+          experienceStartDate: initialData.experienceStartDate,
+          experienceEndDate: initialData.experienceEndDate,
+          totalSlots: initialData.totalSlots,
+        }
+      : {
+          title: '',
+          description: '',
+          benefits: '',
+          mission: '',
+          location: '',
+          recruitmentStartDate: '',
+          recruitmentEndDate: '',
+          experienceStartDate: '',
+          experienceEndDate: '',
+          totalSlots: 5,
+        },
+  });
+
+  const onSubmit: SubmitHandler<CreateCampaignRequest> = async (data) => {
+    try {
+      if (initialData) {
+        await updateCampaign.mutateAsync({
+          id: initialData.id,
+          data,
+        });
+      } else {
+        await createCampaign.mutateAsync(data);
+      }
+      onSuccess?.();
+    } catch {
+    }
+  };
+
+  const isLoading = createCampaign.isPending || updateCampaign.isPending;
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <div>
+        <label className="block text-sm font-medium text-slate-900 mb-2">
+          체험단 제목 *
+        </label>
+        <input
+          {...register('title')}
+          type="text"
+          className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="체험단의 제목을 입력하세요"
+        />
+        {errors.title && <p className="text-red-600 text-sm mt-1">{errors.title.message}</p>}
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-slate-900 mb-2">
+          상세 설명 *
+        </label>
+        <textarea
+          {...register('description')}
+          rows={4}
+          className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="체험단의 상세 설명을 입력하세요"
+        />
+        {errors.description && (
+          <p className="text-red-600 text-sm mt-1">{errors.description.message}</p>
+        )}
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-slate-900 mb-2">
+          제공 혜택 *
+        </label>
+        <textarea
+          {...register('benefits')}
+          rows={3}
+          className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="제공하는 혜택을 입력하세요"
+        />
+        {errors.benefits && <p className="text-red-600 text-sm mt-1">{errors.benefits.message}</p>}
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-slate-900 mb-2">
+          미션 *
+        </label>
+        <textarea
+          {...register('mission')}
+          rows={3}
+          className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="진행할 미션을 입력하세요"
+        />
+        {errors.mission && <p className="text-red-600 text-sm mt-1">{errors.mission.message}</p>}
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-slate-900 mb-2">
+          위치 *
+        </label>
+        <input
+          {...register('location')}
+          type="text"
+          className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="체험할 위치를 입력하세요"
+        />
+        {errors.location && <p className="text-red-600 text-sm mt-1">{errors.location.message}</p>}
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-slate-900 mb-2">
+            모집 시작일 *
+          </label>
+          <input
+            {...register('recruitmentStartDate')}
+            type="datetime-local"
+            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          {errors.recruitmentStartDate && (
+            <p className="text-red-600 text-sm mt-1">{errors.recruitmentStartDate.message}</p>
+          )}
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-slate-900 mb-2">
+            모집 종료일 *
+          </label>
+          <input
+            {...register('recruitmentEndDate')}
+            type="datetime-local"
+            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          {errors.recruitmentEndDate && (
+            <p className="text-red-600 text-sm mt-1">{errors.recruitmentEndDate.message}</p>
+          )}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-slate-900 mb-2">
+            체험 시작일 *
+          </label>
+          <input
+            {...register('experienceStartDate')}
+            type="date"
+            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          {errors.experienceStartDate && (
+            <p className="text-red-600 text-sm mt-1">{errors.experienceStartDate.message}</p>
+          )}
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-slate-900 mb-2">
+            체험 종료일 *
+          </label>
+          <input
+            {...register('experienceEndDate')}
+            type="date"
+            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          {errors.experienceEndDate && (
+            <p className="text-red-600 text-sm mt-1">{errors.experienceEndDate.message}</p>
+          )}
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-slate-900 mb-2">
+          모집 인원 *
+        </label>
+        <input
+          {...register('totalSlots', { valueAsNumber: true })}
+          type="number"
+          min="1"
+          className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="모집할 인원 수를 입력하세요"
+        />
+        {errors.totalSlots && (
+          <p className="text-red-600 text-sm mt-1">{errors.totalSlots.message}</p>
+        )}
+      </div>
+
+      <button
+        type="submit"
+        disabled={isLoading}
+        className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        {isLoading ? '저장 중...' : initialData ? '수정하기' : '등록하기'}
+      </button>
+    </form>
+  );
+};
