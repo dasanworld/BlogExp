@@ -1,0 +1,119 @@
+# Dependencies
+node_modules/
+/.pnp
+.pnp.js
+
+# Testing
+/coverage
+
+# Next.js
+/.next/
+/out/
+
+# Production
+/build
+/dist
+
+# Misc
+.DS_Store
+*.pem
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Local env files
+.env
+.env*.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+logs
+*.log
+
+# Supabase
+.supabase/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# START Ruler Generated Files
+/.aider.conf.yml
+/.aider.conf.yml.bak
+/.amazonq/mcp.json
+/.amazonq/mcp.json.bak
+/.amazonq/rules/ruler_q_rules.md
+/.amazonq/rules/ruler_q_rules.md.bak
+/.augment/rules/ruler_augment_instructions.md
+/.augment/rules/ruler_augment_instructions.md.bak
+/.clinerules
+/.clinerules.bak
+/.codex/config.toml
+/.codex/config.toml.bak
+/.crush.json
+/.crush.json.bak
+/.cursor/rules/ruler_cursor_instructions.mdc
+/.cursor/rules/ruler_cursor_instructions.mdc.bak
+/.goosehints
+/.goosehints.bak
+/.idx/airules.md
+/.idx/airules.md.bak
+/.junie/guidelines.md
+/.junie/guidelines.md.bak
+/.kilocode/rules/ruler_kilocode_instructions.md
+/.kilocode/rules/ruler_kilocode_instructions.md.bak
+/.kiro/steering/ruler_kiro_instructions.md
+/.kiro/steering/ruler_kiro_instructions.md.bak
+/.openhands/microagents/repo.md
+/.openhands/microagents/repo.md.bak
+/.roo/mcp.json
+/.roo/mcp.json.bak
+/.trae/rules/project_rules.md
+/.trae/rules/project_rules.md.bak
+/AGENTS.md
+/AGENTS.md.bak
+/CLAUDE.md
+/CLAUDE.md.bak
+/CRUSH.md
+/CRUSH.md.bak
+/WARP.md
+/WARP.md.bak
+/firebender.json
+/firebender.json.bak
+/opencode.json
+/opencode.json.bak
+# END Ruler Generated Files
