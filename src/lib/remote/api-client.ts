@@ -1,4 +1,4 @@
-import axios, { isAxiosError } from "axios";
+import axios, { isAxiosError, AxiosHeaders } from "axios";
 
 const apiClient = axios.create({
   // 기본값을 '/api'로 설정하여 Hono [[...hono]] 라우트로 프록시되도록 함
@@ -49,8 +49,14 @@ if (typeof window !== "undefined") {
       const { data: auth } = await supabase.auth.getUser();
       const userId = auth.user?.id;
       if (userId) {
-        config.headers = config.headers ?? {};
-        (config.headers as Record<string, string>)["x-user-id"] = userId;
+        if (!config.headers) {
+          config.headers = new AxiosHeaders();
+        }
+        if (config.headers instanceof AxiosHeaders) {
+          config.headers.set("x-user-id", userId);
+        } else {
+          (config.headers as Record<string, string>)["x-user-id"] = userId;
+        }
       }
       // DEBUG: 요청 로깅
       // eslint-disable-next-line no-console
