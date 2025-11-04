@@ -2,6 +2,8 @@
 
 import Image from "next/image";
 import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 type DashboardPageProps = {
   params: Promise<Record<string, never>>;
@@ -10,6 +12,17 @@ type DashboardPageProps = {
 export default function DashboardPage({ params }: DashboardPageProps) {
   void params;
   const { user } = useCurrentUser();
+  const router = useRouter();
+
+  // 역할 기반 대시보드 분기
+  useEffect(() => {
+    const role = (user?.appMetadata as any)?.role || (user?.userMetadata as any)?.role;
+    if (role === "advertiser") {
+      router.replace("/advertiser/campaigns");
+    } else if (role === "influencer") {
+      router.replace("/influencer/dashboard");
+    }
+  }, [router, user]);
 
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-6 px-6 py-12">
@@ -18,6 +31,17 @@ export default function DashboardPage({ params }: DashboardPageProps) {
         <p className="text-slate-500">
           {user?.email ?? "알 수 없는 사용자"} 님, 환영합니다.
         </p>
+        {user && (
+          <p className="text-xs">
+            역할: {
+              ((user.appMetadata as any)?.role || (user.userMetadata as any)?.role) === 'advertiser'
+                ? '광고주'
+                : ((user.appMetadata as any)?.role || (user.userMetadata as any)?.role) === 'influencer'
+                ? '인플루언서'
+                : '미지정'
+            }
+          </p>
+        )}
       </header>
       <div className="overflow-hidden rounded-xl border border-slate-200">
         <Image

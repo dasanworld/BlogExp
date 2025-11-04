@@ -56,6 +56,7 @@ export const CampaignDetail = ({ campaignId }: CampaignDetailProps) => {
   const router = useRouter();
   const { data: campaign, isLoading, error } = useCampaignDetail(campaignId);
   const { user: currentUser } = useCurrentUser();
+  const role = (currentUser?.appMetadata as any)?.role || (currentUser?.userMetadata as any)?.role;
 
   if (error) {
     return (
@@ -109,6 +110,7 @@ export const CampaignDetail = ({ campaignId }: CampaignDetailProps) => {
   const isRecruitmentFull =
     campaign.applicantCount >= campaign.totalSlots;
   const canApply =
+    role === 'influencer' &&
     campaign.status === 'recruiting' &&
     campaign.userApplicationStatus === 'not_applied' &&
     !isRecruitmentFull;
@@ -361,7 +363,7 @@ export const CampaignDetail = ({ campaignId }: CampaignDetailProps) => {
         <ApplyButton campaignId={campaign.id} />
       )}
 
-      {campaign.userApplicationStatus === 'not_applied' && !canApply && (
+      {campaign.userApplicationStatus === 'not_applied' && !canApply && role === 'influencer' && (
         <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
           <p className="text-blue-800">
             {campaign.status !== 'recruiting'

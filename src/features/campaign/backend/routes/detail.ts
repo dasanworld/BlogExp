@@ -19,13 +19,14 @@ router.get('/api/campaigns/:id', async (c) => {
     }
 
     const supabase = getSupabase(c);
+    const userId = c.req.header('x-user-id') || undefined;
 
     logger?.debug({
       message: 'getCampaignDetail',
       campaignId,
     });
 
-    const result = await getCampaignDetail(supabase, campaignId);
+    const result = await getCampaignDetail(supabase, campaignId, userId);
 
     if (!result.ok) {
       return respond(c, result);

@@ -8,6 +8,8 @@ import { Campaign } from '../types/advertiser-types';
 import { CampaignCard } from './CampaignCard';
 import { CreateCampaignDialog } from './CreateCampaignDialog';
 import { UpdateCampaignDialog } from './UpdateCampaignDialog';
+import { useCloseCampaign } from '../hooks/useCloseCampaign';
+import { AdvertiserProfileCard } from './AdvertiserProfileCard';
 
 export const CampaignList = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -16,6 +18,7 @@ export const CampaignList = () => {
     'recruiting' | 'closed' | 'selection_completed' | undefined
   >(undefined);
   const deleteCampaign = useDeleteCampaign();
+  const closeCampaign = useCloseCampaign();
 
   const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } = useMyCampaigns({
     status: selectedStatus,
@@ -45,6 +48,14 @@ export const CampaignList = () => {
     }
   };
 
+  const handleCloseRecruitment = async (campaignId: string) => {
+    const ok = confirm('모집을 종료하시겠습니까? 종료 후에는 선정만 가능합니다.');
+    if (!ok) return;
+    try {
+      await closeCampaign.mutateAsync(campaignId);
+    } catch {}
+  };
+
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -61,14 +72,23 @@ export const CampaignList = () => {
 
   return (
     <div>
+      <AdvertiserProfileCard />
       <div className="mb-8 flex items-center justify-between">
         <h2 className="text-2xl font-bold text-slate-900">내가 등록한 체험단</h2>
-        <button
-          onClick={() => setIsDialogOpen(true)}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700"
-        >
-          + 신규 체험단 등록
-        </button>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/"
+            className="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg font-medium hover:bg-slate-50"
+          >
+            홈으로 가기
+          </Link>
+          <button
+            onClick={() => setIsDialogOpen(true)}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700"
+          >
+            + 신규 체험단 등록
+          </button>
+        </div>
       </div>
 
       <div className="mb-6 flex gap-2 border-b border-slate-200">
@@ -118,6 +138,7 @@ export const CampaignList = () => {
               campaign={campaign}
               onDelete={handleDelete}
               onEdit={(c) => setEditTarget(c)}
+              onCloseRecruitment={handleCloseRecruitment}
             />
           ))}
 

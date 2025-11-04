@@ -38,6 +38,14 @@ export default function Home() {
             {isAuthenticated && user ? (
               <div className="flex items-center gap-3">
                 <span className="text-sm text-slate-600">{user.email}</span>
+                {(() => {
+                  const role = (user.appMetadata as any)?.role || (user.userMetadata as any)?.role;
+                  const label = role === 'advertiser' ? '광고주' : role === 'influencer' ? '인플루언서' : '역할 미지정';
+                  const cls = role === 'advertiser' ? 'bg-purple-100 text-purple-800' : role === 'influencer' ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-800';
+                  return (
+                    <span className={`px-2 py-1 rounded text-xs font-medium ${cls}`}>{label}</span>
+                  );
+                })()}
                 <div className="flex items-center gap-2">
                   <Link href="/dashboard">
                     <Button variant="outline" size="sm">

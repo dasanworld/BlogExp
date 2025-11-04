@@ -6,9 +6,10 @@ interface CampaignCardProps {
   campaign: Campaign;
   onEdit?: (campaign: Campaign) => void;
   onDelete?: (campaignId: string) => void;
+  onCloseRecruitment?: (campaignId: string) => void;
 }
 
-export const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
+export const CampaignCard = ({ campaign, onEdit, onDelete, onCloseRecruitment }: CampaignCardProps) => {
   const recruitmentStart = new Date(campaign.recruitmentStartDate);
   const recruitmentEnd = new Date(campaign.recruitmentEndDate);
   const today = new Date();
@@ -68,6 +69,14 @@ export const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) 
         >
           상세/관리
         </Link>
+        {campaign.status === 'recruiting' && (
+          <button
+            onClick={() => onCloseRecruitment?.(campaign.id)}
+            className="flex-1 px-3 py-2 border border-orange-300 text-orange-700 rounded text-sm font-medium hover:bg-orange-50"
+          >
+            모집 종료
+          </button>
+        )}
         <button
           onClick={() => onEdit?.(campaign)}
           className="flex-1 px-3 py-2 border border-slate-300 text-slate-700 rounded text-sm font-medium hover:bg-slate-50"

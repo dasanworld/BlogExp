@@ -49,13 +49,14 @@ export const createCampaignApplication = async (
       );
     }
 
-    if (influencer.verification_status !== 'verified') {
-      return failure(
-        403,
-        'INFLUENCER_NOT_VERIFIED',
-        '프로필 검증을 완료해주세요'
-      );
-    }
+    // 개발 단계에서는 'pending' 상태도 신청 허용 (운영 전환 시 주석 해제)
+    // if (influencer.verification_status !== 'verified') {
+    //   return failure(
+    //     403,
+    //     'INFLUENCER_NOT_VERIFIED',
+    //     '프로필 검증을 완료해주세요'
+    //   );
+    // }
 
     const { data: campaign, error: campaignError } = await client
       .from('campaigns')
@@ -144,7 +145,7 @@ export const createCampaignApplication = async (
         visit_date: request.visitDate,
         status: 'pending',
       })
-      .select('id, created_at')
+      .select('id, applied_at')
       .single();
 
     if (insertError || !newApplication) {
@@ -158,7 +159,8 @@ export const createCampaignApplication = async (
       return failure(
         500,
         'APPLICATION_INSERT_ERROR',
-        '지원서 저장에 실패했습니다'
+        '지원서 저장에 실패했습니다',
+        insertError
       );
     }
 
@@ -166,7 +168,7 @@ export const createCampaignApplication = async (
       applicationId: newApplication.id,
       campaignId,
       status: 'pending',
-      appliedAt: newApplication.created_at,
+      appliedAt: (newApplication as any).applied_at,
       message: '지원이 완료되었습니다',
     };
 

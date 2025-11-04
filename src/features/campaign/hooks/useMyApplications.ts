@@ -1,7 +1,8 @@
 'use client';
 
 import { useInfiniteQuery } from '@tanstack/react-query';
-import axios from 'axios';
+import { apiClient } from '@/lib/remote/api-client';
+import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser';
 import { MyApplicationsResponse } from '../types/campaign-types';
 
 interface UseMyApplicationsOptions {
@@ -11,6 +12,7 @@ interface UseMyApplicationsOptions {
 
 export const useMyApplications = (options: UseMyApplicationsOptions = {}) => {
   const { status, limit = 20 } = options;
+  const { isAuthenticated } = useCurrentUser();
 
   return useInfiniteQuery<MyApplicationsResponse>({
     queryKey: ['myApplications', { status }],
@@ -23,12 +25,14 @@ export const useMyApplications = (options: UseMyApplicationsOptions = {}) => {
         params.set('status', status);
       }
 
-      const response = await axios.get(`/api/my/applications?${params.toString()}`);
-      return response.data.data;
+      const response = await apiClient.get(`/my/applications?${params.toString()}`);
+      return response.data as MyApplicationsResponse;
     },
     getNextPageParam: (lastPage) => {
       return lastPage.hasMore ? lastPage.page + 1 : undefined;
     },
     initialPageParam: 1,
+    enabled: isAuthenticated,
+    retry: false,
   });
 };

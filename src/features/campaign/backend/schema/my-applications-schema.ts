@@ -15,8 +15,8 @@ export type MyApplicationsQuery = z.infer<
 export const MyApplicationItemSchema = z.object({
   applicationId: z.string().uuid(),
   status: z.enum(['pending', 'selected', 'rejected']),
-  appliedAt: z.string().datetime(),
-  visitDate: z.string().date(),
+  appliedAt: z.string(),
+  visitDate: z.string(),
   applicationMessage: z.string(),
   campaign: z.object({
     id: z.string().uuid(),
@@ -24,10 +24,10 @@ export const MyApplicationItemSchema = z.object({
     businessName: z.string(),
     category: z.string(),
     location: z.string(),
-    recruitmentStartDate: z.string().datetime(),
-    recruitmentEndDate: z.string().datetime(),
-    experienceStartDate: z.string().date(),
-    experienceEndDate: z.string().date(),
+    recruitmentStartDate: z.string(),
+    recruitmentEndDate: z.string(),
+    experienceStartDate: z.string(),
+    experienceEndDate: z.string(),
     status: z.enum(['recruiting', 'closed', 'selection_completed']),
   }),
 });

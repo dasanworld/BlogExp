@@ -1,7 +1,7 @@
 'use client';
 
 import { useMutation } from '@tanstack/react-query';
-import axios from 'axios';
+import { apiClient } from '@/lib/remote/api-client';
 import {
   CreateApplicationRequest,
   CreateApplicationResponse,
@@ -17,14 +17,14 @@ export const useCreateApplication = () => {
     }
   >({
     mutationFn: async ({ campaignId, request }) => {
-      const response = await axios.post(
-        `/api/campaigns/${campaignId}/apply`,
+      const response = await apiClient.post(
+        `/campaigns/${campaignId}/apply`,
         {
           applicationMessage: request.applicationMessage,
           visitDate: request.visitDate,
         }
       );
-      return response.data.data;
+      return response.data as CreateApplicationResponse;
     },
   });
 };
