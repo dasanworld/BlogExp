@@ -1,5 +1,6 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
-import axios from 'axios';
+import { apiClient } from '@/lib/remote/api-client';
+import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser';
 import { CampaignListResponse } from '../types/advertiser-types';
 
 interface UseMyClaimsOptions {
@@ -9,6 +10,7 @@ interface UseMyClaimsOptions {
 
 export const useMyCampaigns = (options: UseMyClaimsOptions = {}) => {
   const { status, limit = 20 } = options;
+  const { isAuthenticated } = useCurrentUser();
 
   return useInfiniteQuery<CampaignListResponse>({
     queryKey: ['myCampaigns', { status }],
@@ -20,12 +22,14 @@ export const useMyCampaigns = (options: UseMyClaimsOptions = {}) => {
         params.set('status', status);
       }
 
-      const response = await axios.get(`/api/advertiser/campaigns?${params.toString()}`);
-      return response.data.data;
+      const response = await apiClient.get(`/advertiser/campaigns?${params.toString()}`);
+      return response.data as CampaignListResponse;
     },
     getNextPageParam: (lastPage) => {
       return lastPage.hasMore ? lastPage.page + 1 : undefined;
     },
     initialPageParam: 1,
+    enabled: isAuthenticated,
+    retry: false,
   });
 };

@@ -64,10 +64,10 @@ export const AdvertiserProfileForm = () => {
         router.push('/login?redirectedFrom=/advertiser/onboarding');
         return;
       }
-      const result = await updateProfile.mutateAsync(data);
-      if (result) {
+    const result = await updateProfile.mutateAsync(data);
+    if (result) {
         toast({ title: '저장되었습니다', description: '광고주 프로필이 등록되었습니다.' });
-        router.push('/advertiser/campaigns');
+      router.push('/advertiser/campaigns');
       }
     } catch (error: any) {
       const message = error?.response?.data?.error?.message || error?.message || '등록에 실패했습니다';

@@ -30,16 +30,14 @@ export const getCampaigns = async (
         recruitment_end_date,
         total_slots,
         location,
-        advertiser:advertiser_profiles(business_name, category)
+        advertiser_id
         `,
         { count: 'exact' }
       )
       .eq('status', status)
       .gte('recruitment_end_date', new Date().toISOString());
 
-    if (query.category) {
-      queryBuilder = queryBuilder.eq('advertiser.category', query.category);
-    }
+    // category/location 필터는 후처리 또는 별도 조회로 구현할 수 있음
 
     if (query.location) {
       queryBuilder = queryBuilder.ilike('location', `%${query.location}%`);
@@ -89,13 +87,26 @@ export const getCampaigns = async (
       }
     }
 
+    // 광고주 프로필 별도 조회
+    const advMap: Record<string, { business_name: string; category: string }> = {};
+    const advertiserIds = Array.from(new Set((data || []).map((c: any) => c.advertiser_id)));
+    if (advertiserIds.length > 0) {
+      const { data: advs } = await client
+        .from('advertiser_profiles')
+        .select('user_id, business_name, category')
+        .in('user_id', advertiserIds);
+      (advs || []).forEach((a: any) => {
+        advMap[a.user_id] = { business_name: a.business_name, category: a.category };
+      });
+    }
+
     const campaigns: CampaignCard[] = data.map((c: any) => {
-      const advertiser = c.advertiser as any;
+      const adv = advMap[c.advertiser_id] || { business_name: '', category: '' };
       return {
         id: c.id,
         title: c.title,
-        businessName: advertiser?.business_name || '',
-        category: advertiser?.category || '',
+        businessName: adv.business_name,
+        category: adv.category,
         location: c.location,
         recruitmentEndDate: c.recruitment_end_date,
         totalSlots: c.total_slots,

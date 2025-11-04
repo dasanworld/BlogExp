@@ -13,6 +13,17 @@ interface CampaignFormProps {
 }
 
 export const CampaignForm = ({ initialData, onSuccess }: CampaignFormProps) => {
+  const formatDatetimeLocal = (iso: string) => {
+    // ISO -> yyyy-MM-ddTHH:mm
+    const d = new Date(iso);
+    const pad = (n: number) => String(n).padStart(2, '0');
+    const yyyy = d.getFullYear();
+    const mm = pad(d.getMonth() + 1);
+    const dd = pad(d.getDate());
+    const hh = pad(d.getHours());
+    const mi = pad(d.getMinutes());
+    return `${yyyy}-${mm}-${dd}T${hh}:${mi}`;
+  };
   const createCampaign = useCreateCampaign();
   const updateCampaign = useUpdateCampaign();
 
@@ -29,8 +40,8 @@ export const CampaignForm = ({ initialData, onSuccess }: CampaignFormProps) => {
           benefits: initialData.benefits,
           mission: initialData.mission,
           location: initialData.location,
-          recruitmentStartDate: initialData.recruitmentStartDate.slice(0, 16),
-          recruitmentEndDate: initialData.recruitmentEndDate.slice(0, 16),
+          recruitmentStartDate: formatDatetimeLocal(initialData.recruitmentStartDate),
+          recruitmentEndDate: formatDatetimeLocal(initialData.recruitmentEndDate),
           experienceStartDate: initialData.experienceStartDate,
           experienceEndDate: initialData.experienceEndDate,
           totalSlots: initialData.totalSlots,
@@ -49,15 +60,22 @@ export const CampaignForm = ({ initialData, onSuccess }: CampaignFormProps) => {
         },
   });
 
+  const toIso = (v: string) => (v ? new Date(v).toISOString() : v);
+
   const onSubmit: SubmitHandler<CreateCampaignRequest> = async (data) => {
     try {
+      const payload: CreateCampaignRequest = {
+        ...data,
+        recruitmentStartDate: toIso(data.recruitmentStartDate) as any,
+        recruitmentEndDate: toIso(data.recruitmentEndDate) as any,
+      };
       if (initialData) {
         await updateCampaign.mutateAsync({
           id: initialData.id,
-          data,
+          data: payload,
         });
       } else {
-        await createCampaign.mutateAsync(data);
+        await createCampaign.mutateAsync(payload);
       }
       onSuccess?.();
     } catch {
@@ -144,6 +162,8 @@ export const CampaignForm = ({ initialData, onSuccess }: CampaignFormProps) => {
             {...register('recruitmentStartDate')}
             type="datetime-local"
             className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="YYYY-MM-DDTHH:MM"
+            step={60}
           />
           {errors.recruitmentStartDate && (
             <p className="text-red-600 text-sm mt-1">{errors.recruitmentStartDate.message}</p>
@@ -157,6 +177,8 @@ export const CampaignForm = ({ initialData, onSuccess }: CampaignFormProps) => {
             {...register('recruitmentEndDate')}
             type="datetime-local"
             className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="YYYY-MM-DDTHH:MM"
+            step={60}
           />
           {errors.recruitmentEndDate && (
             <p className="text-red-600 text-sm mt-1">{errors.recruitmentEndDate.message}</p>

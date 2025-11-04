@@ -17,11 +17,11 @@ export const CampaignCardSchema = z.object({
   businessName: z.string(),
   category: z.string(),
   location: z.string(),
-  recruitmentEndDate: z.string().datetime(),
+  recruitmentEndDate: z.string(),
   totalSlots: z.number().int().positive(),
   applicantCount: z.number().int().nonnegative(),
   daysLeft: z.number().int(),
-  thumbnailUrl: z.string().url().nullable(),
+  thumbnailUrl: z.string().nullable(),
 });
 
 export type CampaignCard = z.infer<typeof CampaignCardSchema>;

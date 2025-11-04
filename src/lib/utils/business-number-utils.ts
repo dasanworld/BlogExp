@@ -18,26 +18,26 @@ export const formatBusinessNumber = (value: string): string => {
 
 export const validateBusinessNumber = (number: string): boolean => {
   const normalized = normalizeBusinessNumber(number);
-
+  
   if (normalized.length !== 10) {
     return false;
   }
-
+  
   if (!/^\d{10}$/.test(normalized)) {
     return false;
   }
-
+  
   const weights = [1, 3, 7, 1, 3, 7, 1, 3, 5];
   const nums = normalized.split('').map(Number);
   let sum = 0;
-
+  
   for (let i = 0; i < 9; i++) {
     sum += nums[i] * weights[i];
   }
-
+  
   sum += Math.floor((nums[8] * 5) / 10);
   const checkDigit = (10 - (sum % 10)) % 10;
-
+  
   return checkDigit === nums[9];
 };
 

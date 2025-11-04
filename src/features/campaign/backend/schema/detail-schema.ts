@@ -7,8 +7,8 @@ export const CampaignDetailResponseSchema = z.object({
   benefits: z.string(),
   mission: z.string(),
   location: z.string(),
-  recruitmentStartDate: z.string().datetime(),
-  recruitmentEndDate: z.string().datetime(),
+  recruitmentStartDate: z.string(),
+  recruitmentEndDate: z.string(),
   experienceStartDate: z.string(),
   experienceEndDate: z.string(),
   totalSlots: z.number().int().positive(),
@@ -16,7 +16,7 @@ export const CampaignDetailResponseSchema = z.object({
   applicantCount: z.number().int().nonnegative(),
   status: z.enum(['recruiting', 'closed', 'selection_completed']),
   daysLeft: z.number().int(),
-  thumbnailUrl: z.string().url().nullable(),
+  thumbnailUrl: z.string().nullable(),
 
   advertiser: z.object({
     businessName: z.string(),

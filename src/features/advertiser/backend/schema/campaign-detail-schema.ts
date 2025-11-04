@@ -8,16 +8,16 @@ export const CampaignDetailForAdvertiserSchema = z.object({
   benefits: z.string(),
   mission: z.string(),
   location: z.string(),
-  recruitmentStartDate: z.string().datetime(),
-  recruitmentEndDate: z.string().datetime(),
-  experienceStartDate: z.string().date(),
-  experienceEndDate: z.string().date(),
+  recruitmentStartDate: z.string(),
+  recruitmentEndDate: z.string(),
+  experienceStartDate: z.string(),
+  experienceEndDate: z.string(),
   totalSlots: z.number().int(),
   selectedCount: z.number().int(),
   applicantCount: z.number().int(),
   status: z.enum(['recruiting', 'closed', 'selection_completed']),
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
 });
 
 export type CampaignDetailForAdvertiser = z.infer<typeof CampaignDetailForAdvertiserSchema>;
@@ -36,8 +36,8 @@ export const ApplicantItemSchema = z.object({
   applicantId: z.string().uuid(),
   applicantName: z.string(),
   applicationMessage: z.string(),
-  visitDate: z.string().date(),
-  appliedAt: z.string().datetime(),
+  visitDate: z.string(),
+  appliedAt: z.string(),
   status: z.enum(['pending', 'selected', 'rejected']),
   channels: z.array(ApplicantChannelSchema),
 });

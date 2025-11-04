@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
+import { apiClient } from '@/lib/remote/api-client';
 
 interface SelectApplicantsRequest {
   campaignId: string;
@@ -11,7 +11,7 @@ export const useSelectApplicants = () => {
 
   return useMutation({
     mutationFn: async (request: SelectApplicantsRequest) => {
-      const response = await axios.post(`/api/advertiser/campaigns/${request.campaignId}/select`, {
+      const response = await apiClient.post(`/advertiser/campaigns/${request.campaignId}/select`, {
         selectedApplicationIds: request.selectedApplicationIds,
       });
       return response.data;

@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+const isDateTimeLocal = (v: string) => /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(v);
+
 export const CreateCampaignSchema = z
   .object({
     title: z
@@ -24,11 +26,17 @@ export const CreateCampaignSchema = z
       .max(500, '위치는 500자 이하'),
     recruitmentStartDate: z
       .string()
-      .datetime()
+      .refine((v) => isDateTimeLocal(v) || !Number.isNaN(Date.parse(v)), {
+        message: '유효한 날짜/시간을 입력해주세요',
+      })
       .refine((date) => new Date(date) >= new Date(), {
         message: '모집 시작일은 오늘 이후여야 합니다',
       }),
-    recruitmentEndDate: z.string().datetime(),
+    recruitmentEndDate: z
+      .string()
+      .refine((v) => isDateTimeLocal(v) || !Number.isNaN(Date.parse(v)), {
+        message: '유효한 날짜/시간을 입력해주세요',
+      }),
     experienceStartDate: z.string().date(),
     experienceEndDate: z.string().date(),
     totalSlots: z
@@ -79,16 +87,16 @@ export const CampaignResponseSchema = z.object({
   benefits: z.string(),
   mission: z.string(),
   location: z.string(),
-  recruitmentStartDate: z.string().datetime(),
-  recruitmentEndDate: z.string().datetime(),
-  experienceStartDate: z.string().date(),
-  experienceEndDate: z.string().date(),
+  recruitmentStartDate: z.string(),
+  recruitmentEndDate: z.string(),
+  experienceStartDate: z.string(),
+  experienceEndDate: z.string(),
   totalSlots: z.number().int(),
   selectedCount: z.number().int(),
   status: z.enum(['recruiting', 'closed', 'selection_completed']),
   applicantCount: z.number().int().default(0),
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
 });
 
 export type CampaignResponse = z.infer<typeof CampaignResponseSchema>;

@@ -1,14 +1,17 @@
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
+import { apiClient } from '@/lib/remote/api-client';
+import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser';
 import { ApplicantsResponse } from '../types/advertiser-types';
 
 export const useApplicants = (campaignId: string) => {
+  const { isAuthenticated } = useCurrentUser();
   return useQuery<ApplicantsResponse>({
     queryKey: ['applicants', campaignId],
     queryFn: async () => {
-      const response = await axios.get(`/api/advertiser/campaigns/${campaignId}/applicants`);
-      return response.data.data;
+      const response = await apiClient.get(`/advertiser/campaigns/${campaignId}/applicants`);
+      return response.data as ApplicantsResponse;
     },
-    enabled: !!campaignId,
+    enabled: !!campaignId && isAuthenticated,
+    retry: false,
   });
 };

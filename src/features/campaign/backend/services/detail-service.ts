@@ -25,12 +25,7 @@ export const getCampaignDetail = async (
   try {
     const { data: campaign, error: campaignError } = await client
       .from('campaigns')
-      .select(
-        `
-        *,
-        advertiser:advertiser_profiles!inner(business_name, category, location)
-      `
-      )
+      .select('*')
       .eq('id', campaignId)
       .single();
 
@@ -58,7 +53,18 @@ export const getCampaignDetail = async (
       userApplicationStatus = application ? application.status : 'not_applied';
     }
 
-    const advertiser = campaign.advertiser as any;
+    // 광고주 정보 별도 조회
+    let advertiser = { business_name: '', category: '', location: campaign.location } as any;
+    if (campaign.advertiser_id) {
+      const { data: adv } = await client
+        .from('advertiser_profiles')
+        .select('business_name, category, location')
+        .eq('user_id', campaign.advertiser_id)
+        .maybeSingle();
+      if (adv) {
+        advertiser = adv as any;
+      }
+    }
     const detailResponse: CampaignDetailResponse = {
       id: campaign.id,
       title: campaign.title,

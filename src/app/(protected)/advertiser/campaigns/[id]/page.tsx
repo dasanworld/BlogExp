@@ -7,6 +7,7 @@ import { useApplicants } from '@/features/advertiser/hooks/useApplicants';
 import { CampaignDetailView } from '@/features/advertiser/components/CampaignDetailView';
 import { ApplicantList } from '@/features/advertiser/components/ApplicantList';
 import { CloseCampaignDialog } from '@/features/advertiser/components/CloseCampaignDialog';
+import { UpdateCampaignDialog } from '@/features/advertiser/components/UpdateCampaignDialog';
 import { Button } from '@/components/ui/button';
 
 export default function CampaignDetailPage() {
@@ -16,6 +17,7 @@ export default function CampaignDetailPage() {
   const { data: campaign, isLoading: campaignLoading } = useCampaignDetail(campaignId);
   const { data: applicantsData, isLoading: applicantsLoading } = useApplicants(campaignId);
   const [closeCampaignDialogOpen, setCloseCampaignDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
 
   if (campaignLoading) {
     return (
@@ -40,14 +42,22 @@ export default function CampaignDetailPage() {
     <div className="container mx-auto py-8 max-w-6xl">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-slate-900">체험단 상세 관리</h1>
-        {campaign.status === 'recruiting' && (
+        <div className="flex gap-2">
           <Button
-            onClick={() => setCloseCampaignDialogOpen(true)}
-            className="bg-orange-600 hover:bg-orange-700 text-white"
+            variant="outline"
+            onClick={() => setEditDialogOpen(true)}
           >
-            모집 종료
+            수정
           </Button>
-        )}
+          {campaign.status === 'recruiting' && (
+            <Button
+              onClick={() => setCloseCampaignDialogOpen(true)}
+              className="bg-orange-600 hover:bg-orange-700 text-white"
+            >
+              모집 종료
+            </Button>
+          )}
+        </div>
       </div>
 
       <div className="space-y-6">
@@ -77,6 +87,15 @@ export default function CampaignDetailPage() {
         onClose={() => setCloseCampaignDialogOpen(false)}
         onSuccess={() => {
           setCloseCampaignDialogOpen(false);
+        }}
+      />
+
+      <UpdateCampaignDialog
+        open={editDialogOpen}
+        onClose={() => setEditDialogOpen(false)}
+        campaign={campaign}
+        onSuccess={() => {
+          setEditDialogOpen(false);
         }}
       />
     </div>

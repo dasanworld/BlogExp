@@ -7,9 +7,11 @@ import { useDeleteCampaign } from '../hooks/useDeleteCampaign';
 import { Campaign } from '../types/advertiser-types';
 import { CampaignCard } from './CampaignCard';
 import { CreateCampaignDialog } from './CreateCampaignDialog';
+import { UpdateCampaignDialog } from './UpdateCampaignDialog';
 
 export const CampaignList = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editTarget, setEditTarget] = useState<Campaign | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<
     'recruiting' | 'closed' | 'selection_completed' | undefined
   >(undefined);
@@ -115,8 +117,7 @@ export const CampaignList = () => {
               key={campaign.id}
               campaign={campaign}
               onDelete={handleDelete}
-              onEdit={() => {
-              }}
+              onEdit={(c) => setEditTarget(c)}
             />
           ))}
 
@@ -133,6 +134,14 @@ export const CampaignList = () => {
       )}
 
       <CreateCampaignDialog isOpen={isDialogOpen} onClose={() => setIsDialogOpen(false)} />
+      {editTarget && (
+        <UpdateCampaignDialog
+          open={!!editTarget}
+          onClose={() => setEditTarget(null)}
+          campaign={editTarget}
+          onSuccess={() => setEditTarget(null)}
+        />
+      )}
     </div>
   );
 };

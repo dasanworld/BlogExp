@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
+import { apiClient } from '@/lib/remote/api-client';
 import { CreateCampaignRequest, Campaign } from '../types/advertiser-types';
 
 export const useCreateCampaign = () => {
@@ -7,8 +7,8 @@ export const useCreateCampaign = () => {
 
   return useMutation<Campaign, Error, CreateCampaignRequest>({
     mutationFn: async (data) => {
-      const response = await axios.post('/api/advertiser/campaigns', data);
-      return response.data.data;
+      const response = await apiClient.post('/advertiser/campaigns', data);
+      return response.data as Campaign;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['myCampaigns'] });

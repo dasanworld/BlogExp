@@ -9,7 +9,7 @@ export const useCampaignDetail = (campaignId: string) => {
     queryKey: ['campaign', campaignId],
     queryFn: async () => {
       const response = await axios.get(`/api/campaigns/${campaignId}`);
-      return response.data.data;
+      return response.data;
     },
     enabled: !!campaignId,
     staleTime: 1000 * 60 * 5,
