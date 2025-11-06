@@ -7,17 +7,15 @@ export const SignupRequestSchema = z.object({
     .regex(/^[가-힣a-zA-Z\s]+$/, '이름은 한글 또는 영문만 가능합니다'),
 
   phone: z.string()
-    .regex(/^010-?\d{4}-?\d{4}$/, '올바른 휴대폰 번호 형식이 아닙니다')
-    .transform(val => val.replace(/-/g, '')),
+    .transform(val => val.replace(/\D/g, ''))
+    .refine((val) => /^\d{10,11}$/.test(val), '휴대폰 번호는 숫자 10~11자리여야 합니다'),
 
   email: z.string()
     .email('올바른 이메일 형식이 아닙니다')
     .toLowerCase(),
 
   password: z.string()
-    .min(8, '비밀번호는 8자 이상이어야 합니다')
-    .regex(/^(?=.*[a-zA-Z])(?=.*\d)|(?=.*[a-zA-Z])(?=.*[!@#$%^&*])|(?=.*\d)(?=.*[!@#$%^&*])/, 
-      '비밀번호는 영문, 숫자, 특수문자 중 2가지 이상 조합이어야 합니다'),
+    .min(8, '비밀번호는 8자 이상이어야 합니다'),
 
   role: z.enum(['advertiser', 'influencer'], {
     errorMap: () => ({ message: '역할을 선택해주세요' })

@@ -11,10 +11,13 @@ import { ConsentCheckboxes } from './ConsentCheckboxes';
 import { useSignup } from '../hooks/useSignup';
 import { SignupRequestSchema, type SignupRequest } from '../backend/schema/signup-schema';
 import { formatPhoneInput } from '../lib/validation';
+import { useToast } from '@/hooks/use-toast';
+import { extractApiErrorMessage, isAxiosError } from '@/lib/remote/api-client';
 
 export const SignupForm = () => {
   const signup = useSignup();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
 
   const form = useForm<SignupRequest>({
     resolver: zodResolver(SignupRequestSchema),
@@ -37,7 +40,22 @@ export const SignupForm = () => {
     try {
       await signup.mutateAsync(data);
     } catch (error) {
-      console.error(error);
+      const message = extractApiErrorMessage(error, '회원가입에 실패했습니다');
+      // 필드별 에러 매핑 (백엔드 에러코드 기준)
+      if (isAxiosError(error)) {
+        const code = (error.response?.data?.error?.code as string) ?? '';
+        if (code === 'EMAIL_ALREADY_EXISTS') {
+          form.setError('email', { type: 'server', message: '이미 사용 중인 이메일입니다' });
+        }
+        if (code === 'PHONE_ALREADY_EXISTS') {
+          form.setError('phone', { type: 'server', message: '이미 사용 중인 휴대폰번호입니다' });
+        }
+        if (code === 'INVALID_SIGNUP_INPUT') {
+          // 가능한 경우, 서버의 상세 포맷을 일괄 메시지로 출력
+          // 개별 필드 에러는 react-hook-form + zod가 이미 클라이언트에서 처리합니다
+        }
+      }
+      toast({ title: '회원가입 실패', description: message, variant: 'destructive' });
     } finally {
       setIsSubmitting(false);
     }

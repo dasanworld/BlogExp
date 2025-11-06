@@ -1,4 +1,3 @@
-{"error":{"code":"UNAUTHORIZED","message":"인증이 필요합니다"}}# UC-001: 회원가입 & 역할선택 - 구현 계획
 
 ## 개요
 

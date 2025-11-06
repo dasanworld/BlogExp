@@ -33,6 +33,10 @@ export default function SignupPage() {
         </CardHeader>
         <CardContent>
           <SignupForm />
+          <p className="mt-4 text-sm text-slate-600">
+            이미 계정이 있으신가요?{' '}
+            <a href="/login" className="text-blue-600 hover:underline">로그인</a>
+          </p>
         </CardContent>
       </Card>
     </div>
