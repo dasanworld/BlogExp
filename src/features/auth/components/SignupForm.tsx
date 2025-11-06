@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
@@ -18,6 +19,9 @@ export const SignupForm = () => {
   const signup = useSignup();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const router = useRouter();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [redirectUrl, setRedirectUrl] = useState<string | undefined>(undefined);
 
   const form = useForm<SignupRequest>({
     resolver: zodResolver(SignupRequestSchema),
@@ -38,7 +42,9 @@ export const SignupForm = () => {
   const onSubmit = async (data: SignupRequest) => {
     setIsSubmitting(true);
     try {
-      await signup.mutateAsync(data);
+      const result = await signup.mutateAsync(data);
+      setRedirectUrl(result.redirectUrl);
+      setIsDialogOpen(true);
     } catch (error) {
       const message = extractApiErrorMessage(error, '회원가입에 실패했습니다');
       // 필드별 에러 매핑 (백엔드 에러코드 기준)
@@ -182,6 +188,33 @@ export const SignupForm = () => {
           </div>
         )}
       </form>
+      {isDialogOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setIsDialogOpen(false)} />
+          <div className="relative z-10 w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
+            <h3 className="text-lg font-semibold text-slate-900">회원가입 신청 완료</h3>
+            <p className="mt-2 text-sm text-slate-600">
+              입력하신 이메일로 인증 메일이 발송되었습니다. 메일함을 확인하고 인증을 완료해주세요.
+            </p>
+            <div className="mt-6 flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setIsDialogOpen(false)}
+                className="rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
+              >
+                닫기
+              </button>
+              <button
+                type="button"
+                onClick={() => router.push(redirectUrl ?? '/login')}
+                className="rounded-md bg-slate-900 px-3 py-2 text-sm text-white hover:bg-slate-800"
+              >
+                로그인으로 이동
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </Form>
   );
 };

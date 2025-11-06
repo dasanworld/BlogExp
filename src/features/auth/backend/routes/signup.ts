@@ -52,12 +52,12 @@ export const registerSignupRoutes = (app: Hono<AppEnv>) => {
 
     if (!result.ok) {
       const errorResult = result as ErrorResult<SignupServiceError, unknown>;
-
-      if (errorResult.error.code === signupErrorCodes.internalError) {
-        logger.error('Signup failed', errorResult.error);
-      } else {
-        logger.warn('Signup validation failed', errorResult.error.code);
-      }
+      // 모든 실패 케이스 로깅을 강화하여 원인 파악 용이하게
+      logger.error('Signup failed', {
+        code: errorResult.error.code,
+        message: errorResult.error.message,
+        details: errorResult.error.details,
+      });
     } else {
       logger.info('User signed up successfully', { userId: result.data.userId });
     }

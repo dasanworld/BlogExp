@@ -1196,3 +1196,72 @@ export const createHonoApp = () => {
    - 다국어 지원 준비
    - 약관 버전 관리 (향후)
 
+---
+
+## 운영 계획 보강: 회원가입 안정성 & RLS 전략 (v2)
+
+### 배경
+- 실제 오류 로그: `USER_CREATION_FAILED` / `42501 new row violates row-level security policy for table "users"`
+- 원인: DB `public.users`에 RLS가 활성화된 상태에서 API가 삽입을 시도함. 서비스 롤 미사용 또는 정책 부재 시 42501 발생.
+
+### 결정
+- 개발 가속: 우선 RLS 비활성화(전 테이블) → 가입/온보딩/캠페인 플로우 즉시 정상화
+- 안정화 이후: RLS 재활성화 + 최소 정책 적용(템플릿 제공)
+
+### 변경 사항 요약
+- 백엔드
+  - 서비스 롤 클라이언트 전역 적용(Hono `withSupabase`)
+  - `signup-service` 강화: 리디렉션/환경변수 오류 400 매핑, DB 중복 400 매핑, 실패 시 Auth/레코드 롤백
+- DB 마이그레이션
+  - `0002_disable_rls.sql`: 주요 테이블 RLS 비활성화 (즉시 적용)
+  - `0003_enable_rls_policies.sql`: RLS 재활성화 및 최소 정책 템플릿(선택 적용)
+
+### 다이어그램 (Mermaid)
+```mermaid
+flowchart LR
+  FE[Signup Form] --> API[/POST /api/auth/signup/]
+  API --> SR[(Supabase Service Role)]
+  SR --> DB[(Postgres)]
+  DB -->|users insert| OK{RLS?}
+  OK -- disabled --> PASS[Insert success]
+  OK -- enabled w/ policies --> PASS
+  OK -- enabled w/o policies --> ERR[42501]
+```
+
+### 구현 계획 (추가)
+1) 환경 설정 검증
+- `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_APP_URL` 설정 확인
+- Supabase Auth Redirect URLs에 도메인 등록(개발: http://localhost:3000)
+
+2) 마이그레이션 적용
+- 즉시: `supabase/migrations/0002_disable_rls.sql` 실행 → 42501 제거
+- 이후(선택): `0003_enable_rls_policies.sql`로 RLS 재활성화 + 최소 정책 적용
+
+3) 서버 에러 매핑 확장
+- Auth/DB 오류를 400 계열로 변환하여 UX 개선
+- 실패 시 롤백(고아 Auth 제거) 일관 적용
+
+4) UX 보강
+- 가입 성공 시 다이얼로그 표시(메시지/이동 버튼)
+- 실패 시 필드 단위 오류/토스트
+
+### QA 시트 (발췌)
+- 케이스: RLS 활성/비활성 상태에서 가입
+  - 비활성: 201 성공, users/consents/프로필(필요 시) 생성
+  - 활성+정책 없음: 42501 → 0002 적용 후 재시도
+  - 활성+정책 템플릿 적용: 정상 201
+- 케이스: 이메일/휴대폰 중복 → 400, 폼 필드 에러 표시
+- 케이스: 리디렉션 설정 미흡 → 400 `INVALID_SIGNUP_INPUT`
+
+### 롤백/운영 런북
+- 증상: 가입 시 42501 → `0002_disable_rls.sql` 실행 → 재시도
+- 장기: 보안 강화 필요 시 `0003_enable_rls_policies.sql` 적용 후 기능별 정책 점검
+- 서비스 키 교체/누락 의심: 서버 환경변수 재확인, Hono 미들웨어 적용 여부 점검
+
+### 링크
+- 마이그레이션: `supabase/migrations/0002_disable_rls.sql`, `supabase/migrations/0003_enable_rls_policies.sql`
+- 서버: `src/backend/hono/app.ts`, `src/backend/middleware/supabase.ts`
+- 가입 서비스: `src/features/auth/backend/services/signup-service.ts`
+- 가입 폼: `src/features/auth/components/SignupForm.tsx`
+
+

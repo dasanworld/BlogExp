@@ -1,7 +1,7 @@
 'use client';
 
 import { useInfiniteQuery } from '@tanstack/react-query';
-import axios from 'axios';
+import { apiClient } from '@/lib/remote/api-client';
 import { CampaignListResponse } from '../types/campaign-types';
 
 interface UseCampaignsOptions {
@@ -30,7 +30,7 @@ export const useCampaigns = (options: UseCampaignsOptions = {}) => {
         params.set('location', location);
       }
 
-      const response = await axios.get(`/api/campaigns?${params.toString()}`);
+      const response = await apiClient.get(`/campaigns?${params.toString()}`);
       return response.data;
     },
     getNextPageParam: (lastPage) => {
