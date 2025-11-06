@@ -20,6 +20,11 @@ export const CreateCampaignSchema = z
       .string()
       .min(10, '미션은 10자 이상')
       .max(2000, '미션은 2000자 이하'),
+    imgLink: z
+      .string()
+      .transform((v) => (typeof v === 'string' ? v.trim() : v))
+      .refine((v) => !v || /^https?:\/\//.test(v), '유효한 URL을 입력해주세요')
+      .optional(),
     location: z
       .string()
       .min(5, '위치를 입력해주세요')

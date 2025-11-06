@@ -30,14 +30,12 @@ export const CampaignCard = ({ campaign }: CampaignCardProps) => {
     <Link href={`/campaigns/${campaign.id}`}>
       <Card className="overflow-hidden transition hover:shadow-lg cursor-pointer h-full">
         <div className="aspect-video bg-gradient-to-br from-slate-200 to-slate-300 relative overflow-hidden">
-          {campaign.thumbnailUrl ? (
-            <Image
-              src={campaign.thumbnailUrl}
-              alt={campaign.title}
-              fill
-              className="object-cover"
-            />
-          ) : null}
+          <Image
+            src={campaign.thumbnailUrl || '/easynext.png'}
+            alt={campaign.title}
+            fill
+            className="object-cover"
+          />
           <div className="absolute top-3 right-3">
             <Badge className={`${getDaysBadgeColor(campaign.daysLeft)} text-white`}>
               {getDaysBadgeText(campaign.daysLeft)}

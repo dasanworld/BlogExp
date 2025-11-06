@@ -40,6 +40,7 @@ export const CampaignForm = ({ initialData, onSuccess }: CampaignFormProps) => {
           benefits: initialData.benefits,
           mission: initialData.mission,
           location: initialData.location,
+          imgLink: initialData.imgLink ?? '',
           recruitmentStartDate: formatDatetimeLocal(initialData.recruitmentStartDate),
           recruitmentEndDate: formatDatetimeLocal(initialData.recruitmentEndDate),
           experienceStartDate: initialData.experienceStartDate,
@@ -52,6 +53,7 @@ export const CampaignForm = ({ initialData, onSuccess }: CampaignFormProps) => {
           benefits: '',
           mission: '',
           location: '',
+          imgLink: '',
           recruitmentStartDate: '',
           recruitmentEndDate: '',
           experienceStartDate: '',
@@ -66,6 +68,7 @@ export const CampaignForm = ({ initialData, onSuccess }: CampaignFormProps) => {
     try {
       const payload: CreateCampaignRequest = {
         ...data,
+        imgLink: data.imgLink?.trim() ? data.imgLink.trim() : undefined,
         recruitmentStartDate: toIso(data.recruitmentStartDate) as any,
         recruitmentEndDate: toIso(data.recruitmentEndDate) as any,
       };
@@ -97,6 +100,21 @@ export const CampaignForm = ({ initialData, onSuccess }: CampaignFormProps) => {
           placeholder="체험단의 제목을 입력하세요"
         />
         {errors.title && <p className="text-red-600 text-sm mt-1">{errors.title.message}</p>}
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-slate-900 mb-2">
+          대표 이미지 링크 (선택)
+        </label>
+        <input
+          {...register('imgLink')}
+          type="url"
+          className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="https://example.com/image.jpg"
+        />
+        {errors as any && (errors as any).imgLink && (
+          <p className="text-red-600 text-sm mt-1">{(errors as any).imgLink.message as string}</p>
+        )}
       </div>
 
       <div>

@@ -23,17 +23,7 @@ export const getCampaigns = async (
     
     let queryBuilder = client
       .from('campaigns')
-      .select(
-        `
-        id,
-        title,
-        recruitment_end_date,
-        total_slots,
-        location,
-        advertiser_id
-        `,
-        { count: 'exact' }
-      )
+      .select('*', { count: 'exact' })
       .eq('status', status)
       .gte('recruitment_end_date', new Date().toISOString());
 
@@ -100,6 +90,7 @@ export const getCampaigns = async (
       });
     }
 
+    const DEFAULT_THUMBNAIL = '/easynext.png';
     const campaigns: CampaignCard[] = data.map((c: any) => {
       const adv = advMap[c.advertiser_id] || { business_name: '', category: '' };
       return {
@@ -112,7 +103,7 @@ export const getCampaigns = async (
         totalSlots: c.total_slots,
         applicantCount: applicantCountMap[c.id] || 0,
         daysLeft: calculateDaysLeft(c.recruitment_end_date),
-        thumbnailUrl: null,
+        thumbnailUrl: c.ImgLink || DEFAULT_THUMBNAIL,
       };
     });
 

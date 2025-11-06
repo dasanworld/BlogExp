@@ -63,6 +63,7 @@ export const createCampaign = async (
         experience_start_date: request.experienceStartDate,
         experience_end_date: request.experienceEndDate,
         total_slots: request.totalSlots,
+        "ImgLink": (request as any).imgLink ?? null,
         status: 'recruiting',
       })
       .select()

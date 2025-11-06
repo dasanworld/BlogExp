@@ -1264,4 +1264,28 @@ flowchart LR
 - 가입 서비스: `src/features/auth/backend/services/signup-service.ts`
 - 가입 폼: `src/features/auth/components/SignupForm.tsx`
 
+---
+
+## 보강: 캠페인 대표 이미지(ImgLink) 수집 및 노출
+
+### 요구
+- DB `campaigns` 테이블에 `img_link`(사용자 표현: ImgLink)를 추가함
+- 캠페인 생성/수정 시 이미지 URL을 입력받고, 목록 카드에 표시
+- 비어 있으면 기본 이미지로 대체하여 첫 페이지 카드에서 항상 이미지 노출
+
+### 변경
+- 스키마
+  - `CreateCampaignSchema`: `imgLink?: string`(URL 형식, 공백/빈 문자열은 무시)
+- 서비스
+  - 생성: `img_link` 컬럼에 `imgLink` 저장(null 허용)
+  - 목록 조회: `img_link` 선택 후 `thumbnailUrl`로 매핑, 기본값 `/easynext.png`
+- 프론트
+  - `CampaignForm`: 대표 이미지 링크 입력 필드 추가
+  - `CampaignCard`: `thumbnailUrl || '/easynext.png'`으로 항상 이미지 렌더
+
+### QA
+- 이미지 URL 입력 → 목록 카드에 해당 이미지 렌더됨
+- 이미지 미입력 → 기본 이미지(`/easynext.png`) 렌더됨
+- 잘못된 URL → 폼 검증 에러 표시
+
 

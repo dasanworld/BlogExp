@@ -6,6 +6,7 @@ export interface Campaign {
   benefits: string;
   mission: string;
   location: string;
+  imgLink?: string;
   recruitmentStartDate: string;
   recruitmentEndDate: string;
   experienceStartDate: string;
@@ -39,6 +40,7 @@ export interface CreateCampaignRequest {
   benefits: string;
   mission: string;
   location: string;
+  imgLink?: string;
   recruitmentStartDate: string;
   recruitmentEndDate: string;
   experienceStartDate: string;
@@ -52,6 +54,7 @@ export interface UpdateCampaignRequest {
   benefits?: string;
   mission?: string;
   location?: string;
+  imgLink?: string;
   recruitmentStartDate?: string;
   recruitmentEndDate?: string;
   experienceStartDate?: string;
