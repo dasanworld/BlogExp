@@ -59,6 +59,11 @@ logs
 docs/prd.md
 docs/userflow.md
 
+# Dot files (except .gitignore)
+.gemini/
+.qwen/
+.ruler/
+
 # Temporary files
 *.tmp
 *.temp
