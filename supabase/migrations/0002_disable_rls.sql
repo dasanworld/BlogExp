@@ -41,3 +41,4 @@ ALTER TABLE IF EXISTS public.user_consents DISABLE ROW LEVEL SECURITY;
 -- END$$;
 
 
+
